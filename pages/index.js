@@ -3,13 +3,14 @@ import Link from 'next/link'
 import Head from '../components/head'
 import Nav from '../components/nav';
 
-
+import fetch from 'isomorphic-unfetch'
 import TodoList from '../components/TodoList';
 
-const Home = () => (
+const Home = (props) => {
+  return (
   <div className="container">
     <Head title="Home" />
-    <TodoList />
+      <TodoList items={props.todoList.todo} />
     
 
     <style jsx>{`
@@ -62,6 +63,15 @@ const Home = () => (
       }
     `}</style>
   </div>
-)
+  )
+};
+
+Home.getInitialProps = async function() {
+    const res = await fetch('http://localhost:3000/api/todos');
+    const data = await res.json();
+    return {
+        todoList: data
+    }
+};
 
 export default Home

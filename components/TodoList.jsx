@@ -10,106 +10,113 @@ class TodoList extends Component {
 	     items: []
 	   }
 
-	   this.addItem = this.addItem.bind(this);
 	 }
 
-	 addItem(e) {
-	  if(this._inputElement.value !== "") {
-	   const item = {
-	      text: this._inputElement.value,
-	      key: Date.now()
-	   };
+	  componentDidMount(props) {
+        this.setState({items: this.props.items});
+    }
 
-	   this.setState((prevState) => {
-	     return {
-	       items: prevState.items.concat(item)
-	       };
-	   });
-     }
-	   this._inputElement.value = "";
+		 addTodo() {
+        if (this._inputElement.value !== ""){
+            const itemLists = {item: this._inputElement.value, key: Date.now(), done: false};
+            this.setState((prevState) => {
+                return {items: prevState.items.concat(itemLists)}
+            });
+            this._inputElement.value = "";
+        }
+    };
 
-	   console.log(this.state.items);
+		deleteItem(key) {
+        let filterItems = this.state.items.filter(function (item) {
+            return (item.key !== key)
+        });
+        this.setState({items: filterItems})
+    }
 
-	   e.preventDefault();
-	  
-	 
-	 }
+    ItemDone(key, done) {
+        let updateItems= this.state.items.map(item => {
+            if (item.key === key){
+                item.done = done ? false : true;
+            }
+            return item;
+        });
+        this.setState({items: updateItems})
+    }
 
+		render() {
+        return (
+            <div style={styles.container}>
+                <div style={styles.greetings}>
+                    <h3>Hello Mike!</h3>
+                </div>
+                <div style={styles.Todo}>
+                    <h3>Tasks for today!!</h3><br/>
+                    <input className="InputForm" type="text" ref={el => this._inputElement = el}/>
+                    <button onClick={(e) => this.addTodo(e)} style={styles.button}>Add To List</button>
+                </div>
+                <div style={styles.TodoList}>
+                    <table className="table">
+												<TodoItems 
+																	entries={this.state.items}
+																	delete={(key) => this.deleteItem(key)}
+                                  done={(key) => this.ItemDone(key)}/>
+                    </table>
+                </div>
 
-	 deleteItem = (key) => {
-	   let filteredItems = this.state.items.filter(item => item.key !== key);
-
-	   this.setState({
-	      items: filteredItems
-	   });
-	 }
-
-	render() {
-		return (
-			<div className="todoListMain">
-			  <div className="header">
-				  <h2>A Todo Application</h2>
-					   <h5>Click on any item to remove it. </h5>
-			    <form onSubmit={this.addItem}>
-			      <input ref={(a) => this._inputElement = a}
-			      		placeholder="Enter Task"/>
-			      
-			      <button type="submit">Add</button>
-			       
-			    </form>
-			    
-			  </div>
-			   <TodoItems entries={this.state.items} delete={this.deleteItem} />
-
-			    <style jsx>{`
-      			    .todoListMain .header input {
-					padding: 10px;
-					font-size: 16px;
-					border: 2px solid #FFF;
-					}
-
-					.todoListMain .header button {
-					padding: 10px;
-					font-size: 16px;
-					margin-left: 10px;
-					background-color: #0066FF;
-					color: #FFF;
-					border: 2px solid #0066FF;
-
-					}
-
-					.todoListMain .header button:hover {
-					background-color: #003399;
-					border: 2px solid #003399;
-					cursor: pointer;
-					}
-
-					.todoListMain .theList li {
-					color: #333;
-					background-color: rbga(255, 255, 255, .5);
-					padding : 15px;
-					margin-bottom: 15px;
-					border-radius: 5px;
-					list-style: none;
-
-					transition: background-color .2s ease-out;
-					}
+                <style>{`
+                     input[type=text]{
+                        background: transparent;
+                        border-color: #0000ff;
+                        width: 100%;
+                        padding: 12px 20px;
+                        margin: 8px 0;
+                        box-sizing: border-box;
+                    }
+                    input[type=text]:focus {
+                        background-color: transparent;
+                        border-color: #FDB22B;
+                        box-shadow: none;
+                    }
+                    table {
+                        margin-top: 20px;
+                        width: 100%;
+                    }
+                    td {
+                        width: 100%;
+                    }
+                    .markDone {
+                            text-decoration-line: line-through;
+                            background-color: #F1F3F4;
+                `}</style>
+            </div>
+        )
+    };
 
 
-					.todoListMain .theList .li:hover {
-					background-color: pink;
-					cursor: pointer;
-					}
-					ul.theList {
-					padding: 0;
-					}
-					.todoListMain {
-					margin-left: 30%;
-					}
-   		 `}</style>
-			</div>
-		);
-	}
+	
 }
+
+const styles = {
+    container: {marginTop: 50, width: '50%', marginLeft: 'auto',
+        marginRight: 'auto', textAlign: 'center'},
+    Todo: {marginTop: 20},
+    TodoList: {textAlign: 'left', marginTop: '50px', width: '100%'},
+    greetings: {marginTop: 20},
+    button :{
+        marginTop: '20px',
+        width: '25%',
+        height: '32px',
+        margin: ['8px', 0],
+        boxSizing: 'border-box',
+        backgroundColor: '#0000FF',
+        color: 'white',
+        fontSize: 'calc(12px + 2vmin)',
+        borderRadius: '10px',
+        borderWidth: '1px',
+        borderStyle: 'solid',
+        cursor: 'pointer',
+    },
+
+};
 
 export default TodoList;
